@@ -1,0 +1,188 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: fyzj
+  name: 峰芸码整句
+  version: "1.0"
+  author:
+    - 峰芸小子
+  description: |
+    方案基于chaifen.app制作，字根字和二根字打两码，三根以上字打三码。生僻字取一二三四末码。打简拼每字取一码。
+  dependencies:
+    - fyzj_stroke
+    - fyzj_pinyin
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中, 英 ]
+#以下为简繁转换开关，字典必须是简体字
+  - name: simplification
+    reset: 0
+    states: [ 简, 繁 ]
+#以下为中英标点开关   
+  - name: ascii_punct
+    states: [ ▫, ▪ ] 
+#以下为英文标点半角转换开关        
+  - name: full_shape
+    states: [ 半, 全 ]
+  - options: [ "_key_vx" ]
+    states: [ 重 ]    
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - affix_segmentor@stroke 
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - script_translator
+    - script_translator@user_dict_set 
+    - script_translator@user_dict_set2 
+    - reverse_lookup_translator
+    - table_translator@stroke  
+#重复输入翻译器    
+    - history_translator  
+  filters:
+    #简体字转繁体滤镜  
+    - "simplifier@zh_simp"  
+    - reverse_lookup_filter@ddpy    
+    #过滤重复候选     
+    - uniquifier
+zh_simp:
+  opencc_config: s2t.json # 简体转繁体
+  option_name: simplification
+  tags:
+    - abc
+  tips: char  
+
+
+speller:
+  alphabet: zyxwvutsrqponmlkjihgfedcba/
+  delimiter: " "
+  algebra:
+    - derive|^([a-z]{2})$|$1//| #输入「//」切分为二码字，
+    - derive|^([a-z]{3})$|$1/|  #输入「/」切分为三码字
+
+
+translator:
+  dictionary: fyzj
+  contextual_suggestions: true
+  strict_spelling: true
+  #user_dict: fyunzhju.tabledb
+ # db_class: tabledb
+  enable_completion: true #自动补全
+  always_show_comments: true 
+  max_homophones: 10  #最大同音簇長度〔需配合grammar使用〕
+  max_homographs: 10  #最大同形簇長度〔需配合grammar使用〕
+  enable_user_dict: true  #自动调频
+  spelling_hints: 1 #只显示1个字编码
+  prism: fyzj #棱镜名，区别不同的翻译器 
+  enable_charset_filter: false #不开启字符集过滤
+  enable_correction: false #true打开纠错
+  initial_quality: 100 #翻译器出字优先级
+  disable_user_dict_for_patterns:
+    - "^[a-z]{1,3}" #1-3码内不自动调频  
+  packs:
+    - fyzj.user
+
+abc_segmentor:
+  extra_tags:
+    - stroke 
+    - ddpy          #显示带调拼音
+stroke:
+  dictionary: fyzj_stroke
+  tag: stroke
+  prefix: '`'
+  suffix: "'"
+  tips: 〔反查〕  
+  enable_sentence: false
+  extra_tags:
+    - reverse_lookup
+  
+reverse_lookup:
+  dictionary: fyzj_pinyin
+  prefix: "`"
+  suffix: "'"
+  tips: 〔反查〕
+  preedit_format:
+    - xform/([nl])v/$1ü/
+    - xform/([nl])ue/$1üe/
+    - xform/([jqxy])v/$1u/
+  comment_format:
+    - "xform/$/〕/"
+    - "xform/^/〔/"
+    - "xform/~/ /"
+
+ddpy:
+  dictionary: fyzj_pinyin 
+  overwrite_comment: false
+  comment_format:
+    __include: fyzj_pinyin.schema:/translator/comment_format
+  tags:
+    - stroke   
+user_dict_set:
+  dictionary: fyunzhju
+  initial_quality: 100  
+  enable_completion: false
+  enable_sentence: false
+  spelling_hints: 1
+  comment_format:
+  enable_user_dict: true
+  db_class: tabledb
+  user_dict: zjex
+  contextual_suggestions: true
+  max_homophones: 7 
+  max_phrase_length: 12 
+  packs:
+    - fyzj.user
+user_dict_set2:
+  dictionary: fyunzhju
+  initial_quality: 100  
+  enable_completion: true
+  enable_sentence: true
+  spelling_hints: 1
+  comment_format:
+  enable_user_dict: true
+  db_class: tabledb
+  user_dict: zjex2 
+  packs:
+    - fyzj.user
+history:
+  input: 'vx' 
+  size: 1
+  initial_quality: 1000
+menu:
+  alternative_select_keys: 123
+  page_size: 3
+
+punctuator:
+  import_preset: symbols
+
+key_binder:
+  import_preset: default
+  bindings:
+    - { when: has_menu, accept: semicolon, send: 2 }
+    - { when: has_menu, accept: apostrophe, send: 3 }
+recognizer:
+  import_preset: default
+  patterns:
+    punct: "^/([0-9]+[a-z]*|[a-z]+)$"
+    stroke: "`[a-z]*'?$"
+__patch:
+  # 使用語言模型
+  - grammar:/hans_amz?
+  #- grammar:/hans?
+  - fyzj.custom:/patch?

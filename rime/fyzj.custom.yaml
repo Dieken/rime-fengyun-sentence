@@ -1,0 +1,91 @@
+# fyzj.custom.yaml
+#
+# 補靪功能：實現英文字词简码自定义字词混合輸入
+#
+# 作者：瑾昀 <cokunhui@gmail.com>
+#
+# 部署位置：
+# ~/.config/ibus/rime  (Linux)
+# ~/Library/Rime  (Mac OS)
+# %APPDATA%\Rime  (Windows)
+#
+# 於重新部署後生效
+#
+#
+# 注意：本補靪適用於所有rime方案。
+# 只須將本 custom.yaml 的前面名字改爲對應的輸入方案名字然後放入用戶文件夾重新部署即可。如更名爲 cangjie5.custom.yaml 即可應用至倉頡輸入法中。
+#
+#
+#
+
+patch:
+  # 加載 easy_en 依賴
+  "schema/dependencies/@next": easy_en
+  "schema/dependencies/@next": fyzc
+  # 載入翻譯英文的碼表翻譯器，取名爲 english
+  "engine/translators/@next": table_translator@english
+  "engine/translators/@before 1": table_translator@fyunzhju_zc
+  "engine/translators/@before 3": table_translator@custom_phrase
+  "engine/filters/@next": simplifier@bq_simp
+  "engine/filters/@next": simplifier@emoji_switch
+
+  # english 翻譯器的設定項
+  english:
+    dictionary: easy_en
+    spelling_hints: 9
+    enable_completion: true
+    enable_sentence: false 
+    initial_quality: 1
+  
+  fyunzhju_zc:
+    dictionary: fyzc
+    enable_user_dict: false
+    initial_quality: 100
+    enable_sentence: false
+
+  switches:
+    - name: ascii_mode
+      reset: 0
+      states: [ 中, 英 ]
+  #以下为简繁转换开关，字典必须是简体字 
+    - name: simplification
+      reset: 0
+      states: [ 简, 繁 ]
+  #以下为中英标点开关   
+    - name: ascii_punct
+      states: [ ▫, ▪ ] 
+  #以下为英文标点半角转换开关        
+    - name: full_shape
+      states: [ 半, 全 ]
+   #以下为表情滤镜开关，滤镜开关需要滤镜文件支持
+    - name: emoji_segestion
+      reset: 0
+      states: [ 表, 情 ]
+    - name: bqj_segestion
+      reset: 0
+      states: [ 普, 靓 ]
+  #以下为状态栏滤镜配置              
+  emoji_switch:
+    opencc_config: emoji.json
+    option_name: emoji_segestion
+    tags:
+      - abc
+    tips: all #none无注释,char单字注释,all全部注释
+
+  bq_simp:
+    opencc_config: bqj.json
+    option_name: bqj_segestion
+    tags:
+      - abc
+    tips: char
+  custom_phrase:
+    dictionary: ""
+    user_dict: fyzj_custom_phrase
+    db_class: stabledb
+    enable_completion: false
+    enable_sentence: false
+    initial_quality: 1000
+
+
+  #隐藏侯选栏
+  # "switches/@next": {name: _hide_candidate, reset: 1} 

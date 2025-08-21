@@ -1,0 +1,52 @@
+patch:
+  __include: hant
+
+hant:
+  grammar:
+    language: zh-hant-t-essay-bgw
+  translator/contextual_suggestions: true
+  translator/max_homophones: 7
+  translator/max_homographs: 7
+
+hans:
+  grammar:
+    language: zh-hans-t-essay-bgw
+  translator/contextual_suggestions: true
+  collocation_max_length: 5
+  collocation_min_length: 2
+  translator/max_homophones: 7
+  translator/max_homographs: 7
+
+hant_char:
+  grammar:
+    language: zh-hant-t-essay-bgc
+    collocation_max_length: 2
+    collocation_min_length: 2
+  translator/contextual_suggestions: true
+  translator/max_homophones: 7
+  translator/max_homographs: 7
+
+hans_char:
+  grammar:
+    language: zh-hans-t-essay-bgc
+    collocation_max_length: 2
+    collocation_min_length: 2
+  translator/contextual_suggestions: true
+  translator/max_homophones: 7
+  translator/max_homographs: 7
+
+hans_amz:
+    grammar:
+      language: wanxiang-lts-zh-hans #使用中文简体语言模型，可根据需求切换
+      collocation_max_length: 10   #延长命中的最长词组长度，以捕捉更复杂的语言结构
+      collocation_min_length: 2     #保持最短词组长度为3，避免高频2字词干扰
+      #collocation_penalty: -8       #适当调整惩罚值，平衡常见搭配的出现频率
+      #non_collocation_penalty: -35  #加强对非搭配词组的惩罚，提高生成文本的逻辑性
+      #weak_collocation_penalty: -28 #微调弱搭配词组惩罚值，更严格过滤不合理组合
+      #rear_penalty: -20             #加大对词组中后续词语位置的惩罚，使句子结构更自然
+      #idiom_collocation_weight: 2   #新增参数，提升成语搭配的权重，更好处理中文成语
+     # common_phrase_weight: 1.5     #新增参数，增强常用俗语等常见短语的生成权重
+    translator/contextual_suggestions: true #启用上下文建议，提高翻译准确性
+    translator/max_homophones: 12  #增加同音字建议数量，提供更多选择
+    translator/max_homographs: 12  #增加同形字建议数量，丰富语言表达
+   # performance/token_cache_size: 512 #新增参数，设置令牌缓存大小，提高模型运行效率

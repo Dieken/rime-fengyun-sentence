@@ -1,0 +1,60 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: fyzc
+  name: 峰芸码字词
+  version: "0.1"
+  author:
+    - 发明人 峰芸小子
+    - 方案制作 峰芸小子
+  description: |
+    峰芸码整句，整句打二三码，三个字根以上打三码，一二字根字打两码。
+    单字可以打三码，多根字可以打一二三四末根最多五码。
+    通过【地球拼音】和【五笔画】实现 ` 键拼音反查编码、笔画反查带调拼音。
+    fyun.446260410〈群号〉.com 
+  dependencies:
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中, 西 ]
+  - name: full_shape
+    states: [ 半, 全 ]
+  - name: ascii_punct
+    states: [ 。, ． ]
+  - name: zh_trad
+    reset: 0
+    states: [ 简, 繁 ]
+    
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - table_translator
+  filters:
+    - uniquifier
+    - simplifier
+    
+speller:
+  alphabet: "qwertasdfgzxcvbyuiophjklnm'"
+  algebra:
+    - xform|^([a-z]{2})'$|$1|
+translator:
+  dictionary: fyzc
+  prism: fyzc
+  enable_sentence: false  #整句模式

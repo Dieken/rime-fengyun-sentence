@@ -1,0 +1,20 @@
+# Rime dictionary: ‌用户词库‌本用于个人定制词库
+# encoding: utf-8
+#
+---
+name: fyzj.user
+version: '0.2'
+sort: by_weight
+use_preset_vocabulary: false
+columns:
+  - text
+  - weight
+import_tables:
+  - fyzj
+...
+
+# 本文件用于批量导入用户的自定义词汇。
+# 格式为词\t频。
+# 以下是两个示例词：
+张生财	300
+李长江	200
