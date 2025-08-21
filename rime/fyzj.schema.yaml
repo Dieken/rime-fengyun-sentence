@@ -97,7 +97,7 @@ translator:
     - "^[a-z]{1,3}" #1-3码内不自动调频  
   packs:
     - fyzj.user
-
+    #- fyzj.associational
 abc_segmentor:
   extra_tags:
     - stroke 
